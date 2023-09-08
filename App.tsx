@@ -3,7 +3,8 @@ import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { createStackNavigator } from '@react-navigation/stack';
-import LoginScreen from './screens/LoginScreen';
+import FirstScreen from './screens/FirstScreen';
+import RegistrationScreen from './screens/RegistrationScreen';
 
 const Stack = createStackNavigator();
 
@@ -17,16 +18,21 @@ export default function App() {
     if (!fontsLoaded) {
       return <Text>Loading...</Text>;
     }
-  
+
     return (
       <>
       <StatusBar style="light" />
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen
-            name="LoginScreen"
-            component={LoginScreen}
+            name="FirstScreen"
+            component={FirstScreen}
             options={{ headerShown: false }}
+          />
+          <Stack.Screen 
+          name='Registration'
+          component={RegistrationScreen}
+          options={{ headerShown: false}}
           />
         </Stack.Navigator>
       </NavigationContainer>

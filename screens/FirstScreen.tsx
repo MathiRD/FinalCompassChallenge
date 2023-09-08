@@ -1,8 +1,10 @@
 import React from "react";
 import { Text, StyleSheet, View, TouchableOpacity, ImageSourcePropType ,ImageBackground } from 'react-native';
 import { GlobalStyles } from "../constants/styles";
+import { useNavigation } from "@react-navigation/native";
 
-const LoginScreen = (navigation) => {
+const FirstScreen = () => {
+    const navigation: any = useNavigation();
     const backgroundImage: ImageSourcePropType = require('../assets/Background.jpg');
     return (
         <View style={styles.container}>
@@ -18,12 +20,12 @@ const LoginScreen = (navigation) => {
                     Find your favorite plants and{'\n'}help the enviroment
                 </Text>
                 <View  style={styles.buttonSubContainer}>
-                    <TouchableOpacity onPress={() => navigation.navigate('login')}style={styles.buttonContainer}>
-                        <Text style={styles.buttonText}>Sing In</Text>
+                    <TouchableOpacity onPress={() => navigation.navigate('Login')}style={styles.buttonContainer}>
+                        <Text style={styles.buttonText}>Sign In</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => navigation.navigate('Registration')} style={styles.buttonContainer}>
                         <View>
-                            <Text style={styles.buttonText}>Sing Up</Text>
+                            <Text style={styles.buttonText}>Sign Up</Text>
                         </View>
                     </TouchableOpacity>
                 </View>
@@ -84,8 +86,11 @@ const styles = StyleSheet.create ({
         alignItems: 'center',
         color: GlobalStyles.colors.primaryBg,
         textAlign: 'center',
+        fontFamily: 'SourceSans-Regular',
+        fontSize: 21,
+        fontWeight: '400'
     }
 }
 )
 
-export default LoginScreen;
+export default FirstScreen;
