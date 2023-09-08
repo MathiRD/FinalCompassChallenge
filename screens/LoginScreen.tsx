@@ -1,7 +1,8 @@
 import React from "react";
 import { Text, StyleSheet, View, TouchableOpacity, ImageSourcePropType ,ImageBackground } from 'react-native';
 import { GlobalStyles } from "../constants/styles";
-const LoginScreen = () => {
+
+const LoginScreen = (navigation) => {
     const backgroundImage: ImageSourcePropType = require('../assets/Background.jpg');
     return (
         <View style={styles.container}>
@@ -13,11 +14,14 @@ const LoginScreen = () => {
                 <Text style={styles.Title}>
                     Plant{'\n'}Paradise
                 </Text>
-                <Text>
+                <Text style={styles.SubTitle}>
                     Find your favorite plants and{'\n'}help the enviroment
                 </Text>
                 <View  style={styles.buttonSubContainer}>
-                    <TouchableOpacity style={styles.buttonContainer}>
+                    <TouchableOpacity onPress={() => navigation.navigate('login')}style={styles.buttonContainer}>
+                        <Text style={styles.buttonText}>Sing In</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => navigation.navigate('Registration')} style={styles.buttonContainer}>
                         <View>
                             <Text style={styles.buttonText}>Sing Up</Text>
                         </View>
@@ -27,8 +31,6 @@ const LoginScreen = () => {
         </View>
     );
 };
-
-export default LoginScreen;
 
 const styles = StyleSheet.create ({
     container: {
@@ -45,10 +47,21 @@ const styles = StyleSheet.create ({
         backgroundColor:  GlobalStyles.colors.primaryBg
     },
     Title: {
+        fontSize: 50,
+        fontFamily: 'Poppins-Bold',
+        fontWeight: '600',
+        lineHeight: 60,
+        letterSpacing: 0,
+        textAlign: 'left'
 
     },
     SubTitle: {
-
+        fontFamily: 'Poppins-Regular',
+        fontSize: 16,
+        fontWeight: '400',
+        lineHeight: 20,
+        letterSpacing: 0,
+        textAlign: 'left'
     },
     buttonContainer: {
         width: '100%',
@@ -74,3 +87,5 @@ const styles = StyleSheet.create ({
     }
 }
 )
+
+export default LoginScreen;
