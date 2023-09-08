@@ -5,6 +5,7 @@ import { useFonts } from 'expo-font';
 import { createStackNavigator } from '@react-navigation/stack';
 import FirstScreen from './screens/FirstScreen';
 import RegistrationScreen from './screens/RegistrationScreen';
+import LoginScreen from './screens/LoginScreen';
 
 const Stack = createStackNavigator();
 
@@ -28,6 +29,11 @@ export default function App() {
             name="FirstScreen"
             component={FirstScreen}
             options={{ headerShown: false }}
+          />
+          <Stack.Screen 
+          name='Login'
+          component={LoginScreen}
+          options={{ headerShown: false }}
           />
           <Stack.Screen 
           name='Registration'
