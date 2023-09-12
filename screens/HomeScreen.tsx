@@ -136,35 +136,35 @@ const HomeScreen = () => {
             <View style={styles.FilterButtonsContainer}>
               {renderFilterButtons()}
             </View>
-            <View>
-              <ScrollView style={styles.PlantCardsContainer}>
-                {filteredPlants.map((plant) => (
-                  <TouchableOpacity
-                    key={plant.id}
-                    onPress={() => {
-                      navigation.navigate('DetailScreen', { plant });
-                    }}
-                  >
-                    <View style={styles.PlantCard}>
-                      <Image
-                        source={{ uri: plant.image }}
-                        style={styles.PlantCardImage}
-                      />
-                      <Text style={styles.PlantCardTitle}>{plant.title}</Text>
-                              <Text style={styles.PlantCardPrice}>
-                              $ {plant.price.toFixed(2)}
-                          </Text>
-                      <TouchableOpacity style={styles.PlantCardAddToCartButton}>
-                          <Image
-                          source={require('../assets/shopping_bag.png')}
-                          style={styles.ShoppingIcon}
-                          />
-                      </TouchableOpacity>
-                      </View>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
-            </View>
+          <View>
+            <ScrollView style={styles.PlantCardsContainer}>
+              {filteredPlants.map((plant) => (
+                <TouchableOpacity
+                  key={plant.id}
+                  onPress={() => {
+                    navigation.navigate('DetailScreen', { plant });
+                  }}
+                >
+                  <View style={styles.PlantCard}>
+                    <Image
+                      source={{ uri: plant.image }}
+                      style={styles.PlantCardImage}
+                    />
+                    <Text style={styles.PlantCardTitle}>{plant.title}</Text>
+                            <Text style={styles.PlantCardPrice}>
+                            $ {plant.price.toFixed(2)}
+                        </Text>
+                    <TouchableOpacity style={styles.PlantCardAddToCartButton}>
+                        <Image
+                        source={require('../assets/shopping_bag.png')}
+                        style={styles.ShoppingIcon}
+                        />
+                    </TouchableOpacity>
+                    </View>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
           </View>
         </View>
       </ScrollView>
