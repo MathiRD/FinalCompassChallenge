@@ -1,7 +1,14 @@
-import React, { useState, useEffect } from "react";
-import { Text, TouchableOpacity, View, Image, ScrollView, StyleSheet } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import axios from "axios";
+import React, { useState, useEffect } from 'react';
+import {
+  Text,
+  TouchableOpacity,
+  View,
+  Image,
+  ScrollView,
+  StyleSheet,
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -15,7 +22,9 @@ const HomeScreen = () => {
 
   const fetchDataFromApi = async () => {
     try {
-      const response = await axios.get('https://8jcox47hg2.execute-api.us-east-2.amazonaws.com/dev/');
+      const response = await axios.get(
+        'https://8jcox47hg2.execute-api.us-east-2.amazonaws.com/dev/'
+      );
       return response.data.body.data;
     } catch (error) {
       console.error('Erro ao buscar dados da API:', error);
@@ -38,7 +47,7 @@ const HomeScreen = () => {
   function showUserNickName(userName: string) {
     if (userName.length <= 8) return userName;
     return `${userName.slice(0, 7)}...`;
-  };
+  }
 
   const filterPlantsByCategory = (category: string) => {
     setSelectedCategory(category);
@@ -50,10 +59,7 @@ const HomeScreen = () => {
     return categories.map((category) => (
       <TouchableOpacity
         key={category}
-        style={[
-          styles.filterButton,
-          selectedCategory === category ,
-        ]}
+        style={[styles.filterButton, selectedCategory === category]}
         onPress={() => filterPlantsByCategory(category)}
       >
         <Text
@@ -82,13 +88,21 @@ const HomeScreen = () => {
               <Text style={styles.HeaderText}>
                 Hi, {showUserNickName('Matheus')}
               </Text>
-              <TouchableOpacity onPress={() => navigation.navigate('ProfileScreen')}>
-                <Image style={styles.UserIconImage} source={require('../assets/userIcon.png')} />
+              <TouchableOpacity
+                onPress={() => navigation.navigate('ProfileScreen')}
+              >
+                <Image
+                  style={styles.UserIconImage}
+                  source={require('../assets/userIcon.png')}
+                />
               </TouchableOpacity>
             </View>
             <View style={styles.MostPopularItems}>
               <Text style={styles.MostPopularText}>Most Popular</Text>
-              <ScrollView style={styles.MostPopularScrollView} horizontal={true}>
+              <ScrollView
+                style={styles.MostPopularScrollView}
+                horizontal={true}
+              >
                 {apiData.mostPopular.map((item) => (
                   <TouchableOpacity
                     key={item.id}
@@ -98,13 +112,20 @@ const HomeScreen = () => {
                   >
                     <View style={styles.productCard}>
                       <View style={styles.ProductImageContainer}>
-                        <Image source={{ uri: item.image }} style={styles.productImage} />
+                        <Image
+                          source={{ uri: item.image }}
+                          style={styles.productImage}
+                        />
                       </View>
                       <View style={styles.productDescriptionContainer}>
                         <Text style={styles.productName}>{item.title}</Text>
-                        <Text style={styles.productPrice}>$ {item.price.toFixed(2)}</Text>
+                        <Text style={styles.productPrice}>
+                          $ {item.price.toFixed(2)}
+                        </Text>
                         <TouchableOpacity style={styles.addToCartButton}>
-                          <Text style={styles.addToCartButtonText}>Add to cart</Text>
+                          <Text style={styles.addToCartButtonText}>
+                            Add to cart
+                          </Text>
                         </TouchableOpacity>
                       </View>
                     </View>
@@ -115,27 +136,35 @@ const HomeScreen = () => {
             <View style={styles.FilterButtonsContainer}>
               {renderFilterButtons()}
             </View>
-            <ScrollView style={styles.PlantCardsContainer}>
-              {filteredPlants.map((plant) => (
-                <TouchableOpacity
-                  key={plant.id}
-                  onPress={() => {
-                    navigation.navigate('DetailScreen', { plant });
-                  }}
-                >
-                  <View style={styles.PlantCard}>
-                    <Image source={{ uri: plant.image }} style={styles.PlantCardImage} />
-                    <Text style={styles.PlantCardTitle}>{plant.title}</Text>
-                    <View style={styles.PlantCardPriceContainer}>
-                      <Text style={styles.PlantCardPrice}>$ {plant.price.toFixed(2)}</Text>
+            <View>
+              <ScrollView style={styles.PlantCardsContainer}>
+                {filteredPlants.map((plant) => (
+                  <TouchableOpacity
+                    key={plant.id}
+                    onPress={() => {
+                      navigation.navigate('DetailScreen', { plant });
+                    }}
+                  >
+                    <View style={styles.PlantCard}>
+                      <Image
+                        source={{ uri: plant.image }}
+                        style={styles.PlantCardImage}
+                      />
+                      <Text style={styles.PlantCardTitle}>{plant.title}</Text>
+                              <Text style={styles.PlantCardPrice}>
+                              $ {plant.price.toFixed(2)}
+                          </Text>
                       <TouchableOpacity style={styles.PlantCardAddToCartButton}>
-                        <Text style={styles.PlantCardAddToCartButtonText}>Add to cart</Text>
+                          <Image
+                          source={require('../assets/shopping_bag.png')}
+                          style={styles.ShoppingIcon}
+                          />
                       </TouchableOpacity>
-                    </View>
-                  </View>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
+                      </View>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
           </View>
         </View>
       </ScrollView>
@@ -143,16 +172,15 @@ const HomeScreen = () => {
   );
 };
 
-
 const styles = StyleSheet.create({
   MainContainer: {
     flex: 1,
     width: '100%',
-    height: '100%'
+    height: '100%',
   },
   Header: {
     flex: 0.5,
-    width: '100%'
+    width: '100%',
   },
   SubContainer: {
     flex: 1,
@@ -174,11 +202,11 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     overflow: 'hidden',
     width: 200,
-    color: '#000'
+    color: '#000',
   },
   UserIconImage: {
     width: 30,
-    height: 30
+    height: 30,
   },
   MostPopularItems: {
     display: 'flex',
@@ -191,7 +219,7 @@ const styles = StyleSheet.create({
     fontSize: 21,
     fontStyle: 'normal',
     fontWeight: '600',
-    marginBottom: -4
+    marginBottom: -4,
   },
   MostPopularScrollView: {
     flex: 1,
@@ -208,15 +236,15 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     borderRadius: 8,
     marginBottom: 3,
-    elevation: 4
+    elevation: 4,
   },
   ProductImageContainer: {
     flex: 0.5,
-    height: '100%'
+    height: '100%',
   },
   productImage: {
     width: '100%',
-    height: '100%'
+    height: '100%',
   },
   productDescriptionContainer: {
     flex: 0.5,
@@ -241,8 +269,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 110,
     marginLeft: 15,
-    position: "absolute"
-
+    position: 'absolute',
   },
   addToCartButtonText: {
     color: 'white',
@@ -286,37 +313,46 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderTopRightRadius: 20,
     marginBottom: 20,
-    elevation: 4
+    elevation: 4,
+    
   },
   PlantCardImage: {
     width: '100%',
     height: 200,
     marginBottom: 10,
     borderTopRightRadius: 10,
-    borderTopLeftRadius: 10
+    borderTopLeftRadius: 10,
   },
   PlantCardTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  PlantCardPriceContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    marginBottom: 5,
+    marginLeft: 10
   },
   PlantCardPrice: {
     fontSize: 16,
+    fontFamily: 'Poppins-Regular',
+    flex: 0.1,
+    width: 60,
+    marginLeft: 10,
+    marginBottom: 6,
   },
   PlantCardAddToCartButton: {
-    backgroundColor: '#808080',
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    borderRadius: 5,
+    backgroundColor: '#418B64',
+    paddingVertical: 7,
+    paddingHorizontal: 7,
+    borderRadius: 20,
+    marginBottom: 4,
+    marginTop: 222,
+    flex: 1,
+    width: 29,
+    marginLeft: 322,
+    position: 'absolute'
+
   },
-  PlantCardAddToCartButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
+  ShoppingIcon: {
+    width: 15,
+    height: 15,
   },
 });
 
