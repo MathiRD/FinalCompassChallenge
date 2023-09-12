@@ -1,292 +1,323 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Text, TouchableOpacity, View, Image, ScrollView, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-
-interface product {
-    image: any;
-    price: number;
-    name: string;
-}
-
-const productImage = require('../assets/productImage.jpeg')
-
-const mockAPI: product[] = [
-    {
-        image: productImage,
-        name: 'Green Vines',
-        price: 9.20
-    },
-    {
-        image: productImage,
-        name: 'Green Vines',
-        price: 9.20
-    },
-    {
-        image: productImage,
-        name: 'Green Vines',
-        price: 9.20
-    },
-    {
-        image: productImage,
-        name: 'Green Vines',
-        price: 9.20
-    },
-    {
-        image: productImage,
-        name: 'Green Vines',
-        price: 9.20
-    },
-];
+import axios from "axios";
 
 const HomeScreen = () => {
-    const navigation: any = useNavigation();
-    function showUserNickName(userName: string) {
-        if (userName.length <= 8) return userName;
-        userName = `${userName.slice(0,7)}...`;
-        return userName;
+  const navigation = useNavigation();
+
+  const [apiData, setApiData] = useState({
+    mostPopular: [],
+    items: [],
+  });
+
+  const [selectedCategory, setSelectedCategory] = useState('All');
+
+  const fetchDataFromApi = async () => {
+    try {
+      const response = await axios.get('https://8jcox47hg2.execute-api.us-east-2.amazonaws.com/dev/');
+      return response.data.body.data;
+    } catch (error) {
+      console.error('Erro ao buscar dados da API:', error);
+      return {
+        mostPopular: [],
+        items: [],
+      };
     }
+  };
 
-    return (
-        <View style={styles.MainContainer}>
-            <ScrollView>
-                <View style={styles.Header}>
-                    <View style={styles.SubContainer}>
-                        <View style={styles.profileContainer}>
-                            <Text style={styles.HeaderText}>
-                                Hi, {showUserNickName('Matheus')}
-                            </Text>
-                            <TouchableOpacity onPress={() => navigation.navigate('LoginFirst')}>
-                                <Image style={styles.UserIconImage}source={require('../assets/userIcon.png')} />
-                            </TouchableOpacity>
-                        </View>
-                        <View style={styles.MostPopularItems}>
-                            <Text style={styles.MostPopularText}>Most Popular</Text>
-                            <ScrollView style={styles.MostPopularScrollView} horizontal={true}>
-                                {mockAPI.map((product, index) => (
-                                    <View 
-                                    style={styles.product}
-                                    width={287}
-                                    height={136}
-                                    radius={8}
-                                    shadowColor="#000"
-                                    shadowOpacity={0.25}
-                                    shadowRadius={4}
-                                    elevation={4}
-                                    key={index}
-                                    >
-                                    <View style={styles.ProductImageContainer}>
-                                        <Image style={styles.productImage} source={product.image}/>
-                                    </View>
-                                    <View style={styles.productDescriptionContainer}>
-                                        <Text style={styles.productName}>{product.name}</Text>
-                                        <Text style={styles.productPrice}>$ {product.price.toFixed(2)}</Text>
-                                        <TouchableOpacity style={styles.addToCartButton}>
-                                            <Text style={styles.addToCartButtonText}>Add to Cart</Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                    </View>
-                                ))}
-                            </ScrollView>
-                        </View>
-                    </View>
-                </View>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: -8, marginBottom: 10, }}>
-                    <TouchableOpacity>
-                        <Text
-                        style={{
-                            color: '#000',
-                            fontFamily: 'Poppins-Regular',
-                            fontSize: 20,
-                            fontStyle: 'normal',
-                            fontWeight: '500',
-                            lineHeight: 24,
-                            marginLeft: 27
-                        }}>
-                            All</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity>
-                        <Text
-                        style={{
-                            color: '#969595',
-                            fontFamily: 'Poppins-Regular',
-                            fontSize: 20,
-                            fontWeight: '500',
-                            lineHeight: 24
-                        }}
-                        >Indoor</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity>
-                        <Text
-                        style={{
-                            color: '#969595',
-                            fontFamily: 'Poppins-Regular',
-                            fontSize: 20,
-                            fontStyle: 'normal',
-                            fontWeight: '500',
-                            lineHeight: 24,
-                            marginRight: 27
-                        }}
-                        >Outdoor</Text>
-                    </TouchableOpacity>
-                </View>  
-                  {mockAPI.map((product, index) => (
-                    <View 
-                    style={styles.productCard}
-                    width={300}
-                    height={136}
-                    radius={8}
-                    shadowColor="#000"
-                    shadowOpacity={0.25}
-                    shadowRadius={4}
-                    elevation={4}
-                    key={index}
-                    >
-                    <View >
-                        <Image  source={product.image}/>
-                    </View>
-                    <View >
-                        <Text >{product.name}</Text>
-                        <Text >$ {product.price.toFixed(2)}</Text>
-                        <TouchableOpacity >
-                            <Text >Add to Cart</Text>
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await fetchDataFromApi();
+      setApiData(data);
+    };
+
+    fetchData();
+  }, []);
+
+  function showUserNickName(userName: string) {
+    if (userName.length <= 8) return userName;
+    return `${userName.slice(0, 7)}...`;
+  };
+
+  const filterPlantsByCategory = (category: string) => {
+    setSelectedCategory(category);
+  };
+
+  const renderFilterButtons = () => {
+    const categories = ['All', 'Indoor', 'Outdoor'];
+
+    return categories.map((category) => (
+      <TouchableOpacity
+        key={category}
+        style={[
+          styles.filterButton,
+          selectedCategory === category ,
+        ]}
+        onPress={() => filterPlantsByCategory(category)}
+      >
+        <Text
+          style={[
+            styles.filterButtonText,
+            { color: selectedCategory === category ? '#000' : '#808080' },
+          ]}
+        >
+          {category}
+        </Text>
+      </TouchableOpacity>
+    ));
+  };
+
+  const filteredPlants = apiData.items.filter((item) => {
+    if (selectedCategory === 'All') return true;
+    return item.category === selectedCategory;
+  });
+
+  return (
+    <View style={styles.MainContainer}>
+      <ScrollView>
+        <View style={styles.Header}>
+          <View style={styles.SubContainer}>
+            <View style={styles.profileContainer}>
+              <Text style={styles.HeaderText}>
+                Hi, {showUserNickName('Matheus')}
+              </Text>
+              <TouchableOpacity onPress={() => navigation.navigate('ProfileScreen')}>
+                <Image style={styles.UserIconImage} source={require('../assets/userIcon.png')} />
+              </TouchableOpacity>
+            </View>
+            <View style={styles.MostPopularItems}>
+              <Text style={styles.MostPopularText}>Most Popular</Text>
+              <ScrollView style={styles.MostPopularScrollView} horizontal={true}>
+                {apiData.mostPopular.map((item) => (
+                  <TouchableOpacity
+                    key={item.id}
+                    onPress={() => {
+                      navigation.navigate('DetailScreen', { plant: item });
+                    }}
+                  >
+                    <View style={styles.productCard}>
+                      <View style={styles.ProductImageContainer}>
+                        <Image source={{ uri: item.image }} style={styles.productImage} />
+                      </View>
+                      <View style={styles.productDescriptionContainer}>
+                        <Text style={styles.productName}>{item.title}</Text>
+                        <Text style={styles.productPrice}>$ {item.price.toFixed(2)}</Text>
+                        <TouchableOpacity style={styles.addToCartButton}>
+                          <Text style={styles.addToCartButtonText}>Add to cart</Text>
                         </TouchableOpacity>
+                      </View>
                     </View>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
+            <View style={styles.FilterButtonsContainer}>
+              {renderFilterButtons()}
+            </View>
+            <ScrollView style={styles.PlantCardsContainer}>
+              {filteredPlants.map((plant) => (
+                <TouchableOpacity
+                  key={plant.id}
+                  onPress={() => {
+                    navigation.navigate('DetailScreen', { plant });
+                  }}
+                >
+                  <View style={styles.PlantCard}>
+                    <Image source={{ uri: plant.image }} style={styles.PlantCardImage} />
+                    <Text style={styles.PlantCardTitle}>{plant.title}</Text>
+                    <View style={styles.PlantCardPriceContainer}>
+                      <Text style={styles.PlantCardPrice}>$ {plant.price.toFixed(2)}</Text>
+                      <TouchableOpacity style={styles.PlantCardAddToCartButton}>
+                        <Text style={styles.PlantCardAddToCartButtonText}>Add to cart</Text>
+                      </TouchableOpacity>
                     </View>
-                  ))}
-                <View>
-
-                </View>
-            </ScrollView>     	
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
         </View>
-    )
+      </ScrollView>
+    </View>
+  );
 };
 
+
 const styles = StyleSheet.create({
-    MainContainer: {
-        flex: 1,
-        width: '100%',
-        height: '100%'
-    },
-    Header: {
-        flex: 0.5,
-        width: '100%'
-    },
-    SubContainer: {
-        flex: 1,
-        margin: 24,
+  MainContainer: {
+    flex: 1,
+    width: '100%',
+    height: '100%'
+  },
+  Header: {
+    flex: 0.5,
+    width: '100%'
+  },
+  SubContainer: {
+    flex: 1,
+    margin: 24,
+  },
+  profileContainer: {
+    height: 48,
+    display: 'flex',
+    marginTop: 40,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexDirection: 'row',
+    width: '100%',
+  },
+  HeaderText: {
+    fontFamily: 'Poppins-Bold',
+    fontSize: 24,
+    fontStyle: 'normal',
+    fontWeight: '600',
+    overflow: 'hidden',
+    width: 200,
+    color: '#000'
+  },
+  UserIconImage: {
+    width: 30,
+    height: 30
+  },
+  MostPopularItems: {
+    display: 'flex',
+    flex: 1,
+    gap: 24,
+    marginTop: 44,
+  },
+  MostPopularText: {
+    fontFamily: 'Poppins-Bold',
+    fontSize: 21,
+    fontStyle: 'normal',
+    fontWeight: '600',
+    marginBottom: -4
+  },
+  MostPopularScrollView: {
+    flex: 1,
+    gap: 16,
+  },
+  productCard: {
+    flex: 1,
+    width: 287,
+    height: 136,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginRight: 16,
+    overflow: 'hidden',
+    borderRadius: 8,
+    marginBottom: 3,
+    elevation: 4
+  },
+  ProductImageContainer: {
+    flex: 0.5,
+    height: '100%'
+  },
+  productImage: {
+    width: '100%',
+    height: '100%'
+  },
+  productDescriptionContainer: {
+    flex: 0.5,
+    height: '100%',
+    padding: 8,
+    backgroundColor: '#fff',
+  },
+  productName: {
+    color: '#000',
+    fontFamily: 'Poppins-Regular',
+    fontSize: 14,
+    fontStyle: 'normal',
+    fontWeight: '500',
+  },
+  addToCartButton: {
+    width: 121,
+    height: 20,
+    borderRadius: 8,
+    backgroundColor: '#418B64',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 110,
+    marginLeft: 15,
+    position: "absolute"
 
-    },
-    profileContainer: {
-        height: 48,
-        display: 'flex',
-        marginTop: 40,
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        flexDirection: 'row',
-        width: '100%',
-    },
-    HeaderText: {
-        fontFamily: 'Poppins-Bold',
-        fontSize: 24,
-        fontStyle: 'normal',
-        fontWeight: '600',
-        overflow: 'hidden',
-        width: 200,
-        color: '#000'
-    },
-    UserIconImage: {
-        width: 30,
-        height: 30
-    },
-    MostPopularItems: {
-        display: 'flex',
-        flex: 1,
-        gap: 24,
-        marginTop: 44,
-    },
-    MostPopularText: {
-        fontFamily: 'Poppins-Bold',
-        fontSize: 21,
-        fontStyle: 'normal',
-        fontWeight: '600',
-        marginBottom: -4
-    },
-    MostPopularScrollView: {
-        flex: 1,
-        gap: 16,
+  },
+  addToCartButtonText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  productPrice: {
+    color: '#000',
+    fontFamily: 'Poppins-Bold',
+    fontSize: 14,
+    fontStyle: 'normal',
+    fontWeight: '600',
+  },
 
-    },
-    product: {
-        flex: 1,
-        width: 287,
-        height: 136,
-        justifyContent: 'center',
-        alignItems: 'center',
-        flexDirection: 'row',
-        marginRight: 16,
-        overflow: 'hidden',
-        borderRadius: 8,
-        marginBottom: 3
-        
-    },
-    ProductImageContainer: {
-        flex: 0.5,
-        height: '100%'
-    },
-    productImage: {
-        width: '100%',
-        height: '100%'
-    },
-    productDescriptionContainer: {
-        flex: 0.5,
-        height: '100%',
-        padding: 8,
-        backgroundColor: '#fff',
-      },
-    productName: {
-        color: '#000',
-        fontFamily: 'Poppins-Regular',
-        fontSize: 14,
-        fontStyle: 'normal',
-        fontWeight: '500',
-      },
-      addToCartButton: {
-        width: 121,
-        height: 20,
-        borderRadius: 8,
-        backgroundColor: '#418B64',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginTop: 55,
-        marginLeft: 5
-      },
-    addToCartButtonText: {
-        color: 'white',
-        fontSize: 12,
-        fontWeight: 'bold',
-      },
-    productPrice: {
-        color: '#000',
-        fontFamily: 'Poppins-Bold',
-        fontSize: 14,
-        fontStyle: 'normal',
-        fontWeight: '600',
-      },
-      productCard: {
-        flex: 1,
-        width: 287,
-        height: 136,
-        justifyContent: 'center',
-        alignItems: 'center',
-        flexDirection: 'row',
-        marginRight: 16,
-        overflow: 'hidden',
-        borderRadius: 8,
-        marginBottom: 3,
-        marginLeft: 60
-        
-      }
-})
+  filterButtonsContainer: {
+    flexDirection: 'row',
+    marginTop: 8,
+  },
+  FilterButtonsContainer: {
+    flexDirection: 'row',
+    marginTop: 20,
+  },
+  filterButton: {
+    flex: 0.3,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+    marginHorizontal: 5,
+  },
+  filterButtonText: {
+    fontSize: 16,
+    fontFamily: 'Poppins-Bold',
+    fontWeight: 'bold',
+  },
+
+  PlantCardsContainer: {
+    marginTop: 1,
+  },
+  PlantCard: {
+    backgroundColor: 'white',
+    borderRadius: 10,
+    borderTopRightRadius: 20,
+    marginBottom: 20,
+    elevation: 4
+  },
+  PlantCardImage: {
+    width: '100%',
+    height: 200,
+    marginBottom: 10,
+    borderTopRightRadius: 10,
+    borderTopLeftRadius: 10
+  },
+  PlantCardTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  PlantCardPriceContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  PlantCardPrice: {
+    fontSize: 16,
+  },
+  PlantCardAddToCartButton: {
+    backgroundColor: '#808080',
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+  },
+  PlantCardAddToCartButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+});
 
 export default HomeScreen;
