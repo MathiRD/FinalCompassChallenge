@@ -1,22 +1,20 @@
+import React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { createStackNavigator } from '@react-navigation/stack';
 
-
 import FirstScreen from './screens/FirstScreen';
 import RegistrationScreen from './screens/RegistrationScreen';
 import LoginScreen from './screens/LoginScreen';
 import HomeScreen from './screens/HomeScreen';
 import ProfileScreen from './screens/ProfileScreen';
-import DetailScreen from './screens/DetailScreen';
+import DetailsScreen from './screens/DetailScreen';
 import Favorites from './screens/FavoriteScreen';
 import Cart from './screens/CartScreen';
 
 const Stack = createStackNavigator();
-
-
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -61,7 +59,17 @@ export default function App() {
           />
           <Stack.Screen
             name="DetailScreen"
-            component={DetailScreen}
+            component={DetailsScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Favorites"
+            component={Favorites}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Cart"
+            component={Cart}
             options={{ headerShown: false }}
           />
         </Stack.Navigator>

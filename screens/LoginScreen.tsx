@@ -18,7 +18,7 @@ const LoginScreen = () => {
             await signInWithEmailAndPassword(auth,email,password);
             navigation.navigate('Home');
         } catch {error} {
-            console.error('Failed to find user:' , error);
+          console.log('error:', error)
         }
     };
 
