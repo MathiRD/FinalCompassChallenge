@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
     marginTop: 222,
     flex: 1,
     width: 29,
-    marginLeft: 300,
+    marginLeft: 320,
     position: 'absolute',
   },
   ShoppingIcon: {
