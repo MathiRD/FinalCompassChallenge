@@ -9,16 +9,20 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
+import MostPopularCard from '../components/molecules/MostPopularCard'
+import PlantCard from '../components/molecules/PlantCard'
+import FilterButton from '../components/molecules/FilterButton';
+import Navbar from '../components/molecules/NavBar';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
-
   const [apiData, setApiData] = useState({
     mostPopular: [],
     items: [],
   });
 
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [favorites, setFavorites] = useState<{ id: string}[]>([]);
 
   const fetchDataFromApi = async () => {
     try {
@@ -53,28 +57,28 @@ const HomeScreen = () => {
     setSelectedCategory(category);
   };
 
+  const toggleFavorite = (item: any) => {
+    if (favorites.some((favorite) => favorite.id === item.id)) {
+      setFavorites(favorites.filter((favorite) => favorite.id !== item.id));
+    } else {
+      setFavorites([...favorites, item]);
+    }
+  };
+
   const renderFilterButtons = () => {
     const categories = ['All', 'Indoor', 'Outdoor'];
 
     return categories.map((category) => (
-      <TouchableOpacity
+      <FilterButton
         key={category}
-        style={[styles.filterButton]}
+        category={category}
+        selected={selectedCategory === category}
         onPress={() => filterPlantsByCategory(category)}
-      >
-        <Text
-          style={[
-            styles.filterButtonText,
-            selectedCategory === category && styles.selectedFilterButtonText,
-          ]}
-        >
-          {category}
-        </Text>
-      </TouchableOpacity>
+      />
     ));
   };
 
-  const filteredPlants = apiData.items.filter((item) => {
+  const filteredPlants = (apiData.items as any[]).filter((item) => {
     if (selectedCategory === 'All') return true;
     return item.category === selectedCategory;
   });
@@ -89,7 +93,7 @@ const HomeScreen = () => {
                 Hi, {showUserNickName('Matheus asexual')}
               </Text>
               <TouchableOpacity
-                onPress={() => navigation.navigate('ProfileScreen')}
+                onPress={() => navigation.navigate('ProfileScreen' as never)}
               >
                 <Image
                   style={styles.UserIconImage}
@@ -103,92 +107,33 @@ const HomeScreen = () => {
                 style={styles.MostPopularScrollView}
                 horizontal={true}
               >
-                {apiData.mostPopular.map((item) => (
-                  <TouchableOpacity
+                {(apiData.mostPopular as any[]).map((item) => (
+                  <MostPopularCard
                     key={item.id}
-                    onPress={() => {
-                      navigation.navigate('DetailScreen', { plant: item });
-                    }}
-                  >
-                    <View style={styles.productCard}>
-                      <View style={styles.ProductImageContainer}>
-                        <Image
-                          source={{ uri: item.image }}
-                          style={styles.productImage}
-                        />
-                      </View>
-                      <View style={styles.productDescriptionContainer}>
-                        <Text style={styles.productName}>{item.title}</Text>
-                        <Text style={styles.productPrice}>
-                          $ {item.price.toFixed(2)}
-                        </Text>
-                        <TouchableOpacity style={styles.addToCartButton}>
-                          <Text style={styles.addToCartButtonText}>
-                            Add to cart
-                          </Text>
-                        </TouchableOpacity>
-                      </View>
-                    </View>
-                  </TouchableOpacity>
+                    item={item}
+                    toggleFavorite={toggleFavorite}
+                    isFavorite={favorites.some((favorite) => favorite.id === item.id)}
+                  />
                 ))}
               </ScrollView>
             </View>
             <View style={styles.FilterButtonsContainer}>
               {renderFilterButtons()}
             </View>
-          <View>
             <ScrollView style={styles.PlantCardsContainer}>
               {filteredPlants.map((plant) => (
-                <TouchableOpacity
+                <PlantCard
                   key={plant.id}
-                  onPress={() => {
-                    navigation.navigate('DetailScreen', { plant });
-                  }}
-                >
-                  <View style={styles.PlantCard}>
-                    <Image
-                      source={{ uri: plant.image }}
-                      style={styles.PlantCardImage}
-                    />
-                    <Text style={styles.PlantCardTitle}>{plant.title}</Text>
-                            <Text style={styles.PlantCardPrice}>
-                            $ {plant.price.toFixed(2)}
-                        </Text>
-                    <TouchableOpacity style={styles.PlantCardAddToCartButton}>
-                        <Image
-                        source={require('../assets/shopping_bag.png')}
-                        style={styles.ShoppingIcon}
-                        />
-                    </TouchableOpacity>
-                    </View>
-                </TouchableOpacity>
+                  plant={plant}
+                  toggleFavorite={toggleFavorite}
+                  isFavorite={favorites.some((favorite) => favorite.id === plant.id)}
+                />
               ))}
             </ScrollView>
           </View>
-          </View>
         </View>
       </ScrollView>
-      {/* Navbar Container */}
-      <View style={styles.NavbarContainer}>
-        <TouchableOpacity
-          style={styles.NavbarButton}
-          onPress={() => navigation.navigate('Home')}
-        >
-          <Text style={styles.NavbarButtonText}>Home</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.NavbarButton}
-          onPress={() => navigation.navigate('Favorites')}
-        >
-          <Text style={styles.NavbarButtonText}>Favor</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.NavbarButton}
-          onPress={() => navigation.navigate('Cart')}
-        >
-          <Text style={styles.NavbarButtonText}>Cart</Text>
-        </TouchableOpacity>
-      </View>
+      <Navbar/>
     </View>
   );
 };
@@ -233,7 +178,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     flex: 1,
     gap: 24,
-    marginTop: 44,
+    marginTop: 30,
   },
   MostPopularText: {
     fontFamily: 'Poppins-Bold',
@@ -246,155 +191,12 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 16,
   },
-  productCard: {
-    flex: 1,
-    width: 287,
-    height: 136,
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexDirection: 'row',
-    marginRight: 16,
-    overflow: 'hidden',
-    borderRadius: 8,
-    marginBottom: 3,
-    elevation: 4,
-  },
-  ProductImageContainer: {
-    flex: 0.5,
-    height: '100%',
-  },
-  productImage: {
-    width: '100%',
-    height: '100%',
-  },
-  productDescriptionContainer: {
-    flex: 0.5,
-    height: '100%',
-    padding: 8,
-    backgroundColor: '#fff',
-  },
-  productName: {
-    color: '#000',
-    fontFamily: 'Poppins-Regular',
-    fontSize: 14,
-    fontStyle: 'normal',
-    fontWeight: '500',
-  },
-  addToCartButton: {
-    width: 121,
-    height: 20,
-    borderRadius: 8,
-    backgroundColor: '#418B64',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 110,
-    marginLeft: 15,
-    position: 'absolute',
-  },
-  addToCartButtonText: {
-    color: 'white',
-    fontSize: 12,
-    fontWeight: 'bold',
-  },
-  productPrice: {
-    color: '#000',
-    fontFamily: 'Poppins-Bold',
-    fontSize: 14,
-    fontStyle: 'normal',
-    fontWeight: '600',
-  },
-  filterButtonsContainer: {
-    flexDirection: 'row',
-    marginTop: 8,
-  },
   FilterButtonsContainer: {
     flexDirection: 'row',
     marginTop: 20,
   },
-  filterButton: {
-    flex: 0.3,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'flex-start',
-    marginHorizontal: 5,
-  },
-  filterButtonText: {
-    fontSize: 16,
-    fontFamily: 'Poppins-Bold',
-    fontWeight: 'bold',
-    color: '#808080',
-  },
-  selectedFilterButtonText: {
-    color: '#000',
-  },
   PlantCardsContainer: {
     marginTop: 1,
-  },
-  PlantCard: {
-    backgroundColor: 'white',
-    borderRadius: 10,
-    borderTopRightRadius: 20,
-    marginBottom: 20,
-    elevation: 4,
-  },
-  PlantCardImage: {
-    width: '100%',
-    height: 200,
-    marginBottom: 10,
-    borderTopRightRadius: 10,
-    borderTopLeftRadius: 10,
-  },
-  PlantCardTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 5,
-    marginLeft: 10,
-  },
-  PlantCardPrice: {
-    fontSize: 16,
-    fontFamily: 'Poppins-Regular',
-    flex: 0.1,
-    width: 60,
-    marginLeft: 10,
-    marginBottom: 6,
-  },
-  PlantCardAddToCartButton: {
-    backgroundColor: '#418B64',
-    paddingVertical: 7,
-    paddingHorizontal: 7,
-    borderRadius: 20,
-    marginBottom: 4,
-    marginTop: 222,
-    flex: 1,
-    width: 29,
-    marginLeft: 300,
-    position: 'absolute',
-  },
-  ShoppingIcon: {
-    width: 15,
-    height: 15,
-  },
-  NavbarContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: '#FFF',
-    boxShadow: '0px 0px 8px 0px rgba(0, 0, 0, 0.16)',
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    padding: 16,
-  },
-  NavbarButton: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  NavbarButtonText: {
-    color: '#000',
-    fontWeight: 'bold',
   },
 });
 

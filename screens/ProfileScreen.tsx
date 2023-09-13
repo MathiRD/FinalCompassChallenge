@@ -12,7 +12,7 @@ const { width, height } = Dimensions.get('window');
 const ProfileScreen = () => {
   const navigation = useNavigation();
   const handleLogout = () => {
-    navigation.navigate('FirstScreen');
+    navigation.navigate('FirstScreen' as never);
   };
 
   return (

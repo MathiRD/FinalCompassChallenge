@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, Image, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, Image, TouchableOpacity, Dimensions, StyleSheet} from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+
+interface RouteParams {
+  plant : any;
+}
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -10,8 +14,8 @@ const windowHeight = Dimensions.get('window').height;
 const DetailsScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
-
-  const { plant } = route.params;
+ 
+  const { plant } = route.params as RouteParams;
 
   const [isFavorite, setIsFavorite] = useState(false);
   const [quantity, setQuantity] = useState(1);
@@ -43,7 +47,7 @@ const DetailsScreen = () => {
           </TouchableOpacity>
         </View>
       </View>
-      <Image source={{ uri: plant.image }} style={styles.image} />
+      <Image source={{ uri: plant.image } } style={styles.image} />
       <Text style={styles.title}>{plant.title}</Text>
       <Text style={styles.description}>{plant.description}</Text>
       <Text style={styles.price}>${plant.price.toFixed(2)}</Text>
@@ -57,10 +61,10 @@ const DetailsScreen = () => {
         </TouchableOpacity>
       </View>
       <View style={styles.bottomContainer}>
-        <Text style={styles.totalText}>Total: ${parseFloat(plant.price * quantity).toFixed(2)}</Text>
+        <Text style={styles.totalText}>Total: ${parseFloat(plant.price * quantity as never).toFixed(2)}</Text>
         <TouchableOpacity
           style={styles.addToCartButton}
-          onPress={() => navigation.navigate('Cart')} // Navegação para o carrinho
+          onPress={() => navigation.navigate('Cart' as never)}
         >
           <Text style={styles.addToCartButtonText}>Add to Cart</Text>
         </TouchableOpacity>
@@ -69,7 +73,7 @@ const DetailsScreen = () => {
   );
 };
 
-const headerStyles = {
+const headerStyles = StyleSheet.create ({
     container: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -90,9 +94,9 @@ const headerStyles = {
       fontWeight: '600',
       lineHeight: 24,
     },
-  };
+  });
   
-  const styles = {
+  const styles = StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: 'white',
@@ -207,7 +211,7 @@ const headerStyles = {
       fontWeight: 'bold',
       color: 'black',
     },
-  };
+  });
   
 
 export default DetailsScreen;
