@@ -95,7 +95,6 @@ const RegistrationScreen = () => {
         )}
       </TouchableOpacity>
 
-      {/* Modal para exibir mensagem de erro */}
       <Modal
         visible={isFailed}
         transparent={true}
@@ -117,7 +116,6 @@ const RegistrationScreen = () => {
         </View>
       </Modal>
 
-      {/* Modal para exibir mensagem de sucesso */}
       <Modal
         visible={isSuccessModalVisible}
         transparent={true}

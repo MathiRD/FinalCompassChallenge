@@ -16,10 +16,10 @@ const SignInScreen = () => {
 
       navigation.navigate('Home');
 
-      console.log('Usuário logado com sucesso!', userCredential.user);
+      console.log('Sucess!', userCredential.user);
     } catch (error) {
       setError(error.message);
-      console.error('Erro ao fazer login:', error);
+      console.error('Error:', error);
     }
   };
 
