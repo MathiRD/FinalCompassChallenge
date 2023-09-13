@@ -1,29 +1,87 @@
-import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import React, { useState } from 'react';
+import { TouchableOpacity, Text, StyleSheet, View, Image } from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 
 const Navbar = () => {
   const navigation = useNavigation();
+  const route = useRoute();
+  const [activePage, setActivePage] = useState(route.name);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      setActivePage(route.name);
+    }, [route.name])
+  );
+
+  const handleNavigation = (pageName) => {
+    navigation.navigate(pageName);
+  };
 
   return (
     <View style={styles.NavbarContainer}>
       <TouchableOpacity
         style={styles.NavbarButton}
-        onPress={() => navigation.navigate('Home' as never)}
+        onPress={() => handleNavigation('Home')}
       >
-        <Text style={styles.NavbarButtonText}>Home</Text>
+        <Image
+          style={styles.ShoppinBag}
+          source={
+            activePage === 'Home'
+              ? require('../../assets/home.png')
+              : require('../../assets/homeBlack.png')
+          }
+        />
+        <Text
+          style={[
+            styles.NavbarButtonText,
+            { color: activePage === 'Home' ? 'green' : '#000' },
+          ]}
+        >
+          Home
+        </Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.NavbarButton}
-        onPress={() => navigation.navigate('Favorites' as never)}
+        onPress={() => handleNavigation('Favorites')}
       >
-        <Text style={styles.NavbarButtonText}>Favorites</Text>
+        <Image
+          style={styles.ShoppinBag}
+          source={
+            activePage === 'Favorites'
+              ? require('../../assets/FavoriteGreen.png')
+              : require('../../assets/favorite_border.png')
+          }
+        />
+        <Text
+          style={[
+            styles.NavbarButtonText,
+            { color: activePage === 'Favorites' ? 'green' : '#000' },
+          ]}
+        >
+          Favorites
+        </Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.NavbarButton}
-        onPress={() => navigation.navigate('Cart' as never)}
+        onPress={() => handleNavigation('Cart')}
       >
-        <Text style={styles.NavbarButtonText}>Cart</Text>
+        <Image
+          style={styles.ShoppinBag}
+          source={
+            activePage === 'Cart'
+              ? require('../../assets/ShoppingGreen.png')
+              : require('../../assets/shopping_bagBlack.png')
+          }
+        />
+        <Text
+          style={[
+            styles.NavbarButtonText,
+            { color: activePage === 'Cart' ? 'green' : '#000' },
+          ]}
+        >
+          Cart
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -35,12 +93,21 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: '#FFF',
-    boxShadow: '0px 0px 8px 0px rgba(0, 0, 0, 0.16)',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: -2,
+    },
+    shadowOpacity: 0.16,
+    shadowRadius: 8,
+    elevation: 5,
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
     padding: 16,
+    borderTopColor: 'lightgray',
+    borderTopWidth: 0.5,
   },
   NavbarButton: {
     flex: 1,
@@ -48,8 +115,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   NavbarButtonText: {
-    color: '#000',
     fontWeight: 'bold',
+  },
+  ShoppinBag: {
+    width: 20,
+    height: 20,
   },
 });
 

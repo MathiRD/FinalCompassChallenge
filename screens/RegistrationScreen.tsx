@@ -1,109 +1,135 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, ActivityIndicator, Modal } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Modal,
+  ActivityIndicator,
+} from 'react-native';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import firebaseConfig from '../firebaseConfig';
 import { initializeApp } from 'firebase/app';
-import { GlobalStyles } from '../constants/styles';
+import { useNavigation } from '@react-navigation/native';
 
 initializeApp(firebaseConfig);
 
 const RegistrationScreen = () => {
-  const navigation: any = useNavigation();
-  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [isFailed, setIsFailed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [isSucessModal, setIsSucees] = useState(false);
+  const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
+  const auth = getAuth();
+  const navigation = useNavigation();
 
-  useEffect(() => {
-    getAuth();
-  }, []);
-  const ShowSucess = () => {
-    setIsSucees(true);
-  }
   const handleSignup = async () => {
-    const auth = getAuth();
+    if (password !== confirmPassword) {
+      setIsFailed(true);
+      return;
+    }
+
     setIsLoading(true);
 
     try {
       await createUserWithEmailAndPassword(auth, email, password);
       setIsLoading(false);
-      ShowSucess();
-      navigation.navigate('Login');
+      setIsSuccessModalVisible(true);
     } catch (error) {
       setIsFailed(true);
       setIsLoading(false);
     }
   };
 
-  const GoToLoginScreen = () => {
-    navigation.navigate('Login');
-  }
+  const handleBackButtonPress = () => {
+    navigation.goBack();
+  };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.headerText}>Create an Account</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Name"
-        onChangeText={(text) => setName(text)}
-      />
+      <View style={styles.headerContainer}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={handleBackButtonPress} 
+        >
+          <Text style={styles.backButtonLabel}>&lt;</Text>
+        </TouchableOpacity>
+        <Text style={styles.headerText}>Sign Up</Text>
+      </View>
+      <Text style={styles.mockTextEmail}>E-MAIL</Text>
       <TextInput
         style={styles.input}
         placeholder="Email"
         onChangeText={(text) => setEmail(text)}
       />
+      <Text style={styles.mockTextPassword}>PASSWORD</Text>
       <TextInput
         style={styles.input}
         placeholder="Password"
         secureTextEntry
         onChangeText={(text) => setPassword(text)}
       />
-      {error && <Text style={styles.error}>{error}</Text>}
-      <TouchableOpacity style={styles.button} onPress={handleSignup} disabled={isLoading}>
+      <Text style={styles.mockTextPassConfirm}>PASSWORD CONFIRMATION</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Confirm Password"
+        secureTextEntry
+        onChangeText={(text) => setConfirmPassword(text)}
+      />
+      {isFailed && (
+        <Text style={styles.error}>
+          Password and Confirm Password do not match.
+        </Text>
+      )}
+      <TouchableOpacity
+        style={styles.button}
+        onPress={handleSignup}
+        disabled={isLoading}
+      >
         {isLoading ? (
-          <ActivityIndicator color={GlobalStyles.colors.primaryBg} size={'small'}/>
+          <ActivityIndicator color="white" size="small" />
         ) : (
-          <Text style={styles.buttonText}>Register</Text>
+          <Text style={styles.buttonText}>Sign Up</Text>
         )}
       </TouchableOpacity>
-      <Text style={styles.GoToLoginText} onPress={GoToLoginScreen}>
-        Do you already have an account? Go to the login.
-      </Text>
 
+      {/* Modal para exibir mensagem de erro */}
       <Modal
-      visible={isFailed}
-      transparent={true}
-      animationType='fade'
-      onRequestClose={() => setIsFailed(false)}
+        visible={isFailed}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setIsFailed(false)}
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalText}>Incorrect Email or Password</Text>
+            <Text style={styles.modalText}>
+              Password and Confirm Password do not match.
+            </Text>
             <TouchableOpacity
-            style={styles.modalButton}
-            onPress={() => setIsFailed(false)}
+              style={styles.modalButton}
+              onPress={() => setIsFailed(false)}
             >
               <Text style={styles.modalButtonText}>Close</Text>
-              </TouchableOpacity>          
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
+
+      {/* Modal para exibir mensagem de sucesso */}
       <Modal
-      visible={isSucessModal}
-      transparent={true}
-      animationType='fade'
-      onRequestClose={() => setIsSucees(false)}
+        visible={isSuccessModalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setIsSuccessModalVisible(false)}
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <Text style={styles.modalText}>Successfully registered!</Text>
             <TouchableOpacity
-            style={styles.modalButton}
-            onPress={() => setIsSucees(false)}
+              style={styles.modalButton}
+              onPress={() => setIsSuccessModalVisible(false)}
             >
               <Text style={styles.modalButtonText}>Close</Text>
             </TouchableOpacity>
@@ -117,77 +143,108 @@ const RegistrationScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    backgroundColor: 'white',
+    paddingHorizontal: 24,
+    paddingTop: 25,
+    marginBottom: 10,
+  },
+  headerContainer: {
+    flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: GlobalStyles.colors.secondaryBg,
+    marginBottom: 30,
+    elevation: 8,
+    width: '100%',
+    justifyContent: 'center',
+    backgroundColor: 'white',
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(0, 0, 0, 0.1)',
+    shadowColor: 'rgba(0, 0, 0, 0.1)',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 1,
+    shadowRadius: 4,
   },
   headerText: {
+    flex: 1,
+    textAlign: 'center',
     fontFamily: 'Poppins-Bold',
     fontSize: 24,
-    marginBottom: 20,
-    color: GlobalStyles.colors.primaryColor, 
+    color: 'black',
+  },
+  backButton: {
+    position: 'absolute',
+    left: 2,
+    top: -10,
+  },
+  backButtonLabel: {
+    fontSize: 32,
+    color: 'black',
+    paddingLeft: 12,
+  },
+  mockTextEmail: {
+    fontFamily: 'Poppins-Regular',
+    color: 'grey',
+  },
+  mockTextPassword: {
+    fontFamily: 'Poppins-Regular',
+    color: 'grey',
+  },
+  mockTextPassConfirm: {
+    fontFamily: 'Poppins-Regular',
+    color: 'grey',
   },
   input: {
-    width: '80%',
-    height: 40,
-    backgroundColor: GlobalStyles.colors.primaryBg,
-    marginBottom: 10,
+    width: '100%',
+    height: 50,
+    backgroundColor: 'white',
+    marginBottom: 30,
     paddingLeft: 10,
-    borderRadius: 5,
-    borderColor: GlobalStyles.colors.secondaryColor,
-    borderWidth: 1,
+    borderRadius: 10,
+    borderColor: 'black',
+    borderWidth: 2,
   },
-  button : {
-    width: '80%',
-    height: 40,
+  button: {
+    width: '100%',
+    height: 50,
     borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: GlobalStyles.colors.primaryColor
+    backgroundColor: '#418B64',
   },
   buttonText: {
-    color: GlobalStyles.colors.primaryBg,
+    color: 'white',
     fontSize: 16,
-    fontWeight: 'bold'
+    fontFamily: 'Poppins-Regular',
   },
   error: {
-    color: '#ff0000',
+    color: 'red',
     marginTop: 10,
-    fontSize: 16
+    fontSize: 16,
   },
   modalContainer: {
     flex: 1,
-    alignContent: 'center',
     justifyContent: 'center',
-    backgroundColor: '#0005'
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContent: {
-    marginLeft: 41,
-    width: '80%',
-    backgroundColor: GlobalStyles.colors.primaryBg,
-    padding: 20,
-    borderRadius: 10,
+    backgroundColor: 'white',
+    borderRadius: 16,
+    padding: 24,
     alignItems: 'center',
-
   },
   modalText: {
     fontSize: 18,
     marginBottom: 20,
   },
   modalButton: {
-    backgroundColor: GlobalStyles.colors.primaryColor,
+    backgroundColor: '#418B64',
     padding: 10,
-    borderRadius: 5,
+    borderRadius: 10,
   },
   modalButtonText: {
-    color: '#fff',
+    color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
-  },
-  GoToLoginText: {
-    marginTop: 20,
-    color: '#204330',
-    fontSize: 16,
   },
 });
 

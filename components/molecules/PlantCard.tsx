@@ -1,8 +1,9 @@
+// PlantCard.js
 import React from 'react';
 import { View, Image, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-const PlantCard = ({ plant, toggleFavorite, isFavorite } : {plant: any, toggleFavorite: (item:any)=> void, isFavorite: boolean}) => {
+const PlantCard = ({ plant, toggleFavorite, isFavorite } : {plant : any, toggleFavorite: any, isFavorite: any}) => {
   const navigation = useNavigation();
   return (
     <TouchableOpacity onPress={() => navigation.navigate('DetailScreen', { plant })}>
